@@ -1,11 +1,11 @@
 import unittest
 
-from .conftest import pytest_report_header
-
 __copyright__ = "Copyright 2019, 3Liz"
 __license__ = "GPL version 3"
 __email__ = "info@3liz.org"
 __revision__ = "$Format:%H$"
+
+from .utilities import pytest_report_header
 
 
 def _run_tests(test_suite, package_name):
