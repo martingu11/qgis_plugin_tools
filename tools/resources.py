@@ -10,6 +10,8 @@ __license__ = "GPL version 3"
 __email__ = "info@3liz.org"
 __revision__ = "$Format:%H$"
 
+PLUGIN_NAME: str = ""
+
 
 def plugin_path(*args):
     """Get the path to plugin root folder.
@@ -34,9 +36,12 @@ def plugin_name():
     :return: The plugin name.
     :rtype: basestring
     """
-    metadata = metadata_config()
-    name = metadata["general"]["name"]
-    return name
+    global PLUGIN_NAME
+    if PLUGIN_NAME == "":
+        metadata = metadata_config()
+        name = metadata["general"]["name"]
+        PLUGIN_NAME = name
+    return PLUGIN_NAME
 
 
 def metadata_config() -> configparser:
@@ -93,3 +98,12 @@ def load_ui(*args):
     """
     ui_class, _ = uic.loadUiType(resources_path("ui", *args))
     return ui_class
+
+
+def setting_key(*args) -> str:
+    """
+
+    :param args List of path elements e.g. ['img', 'logos', 'image.png']
+    :return:
+    """
+    return join(plugin_name(), *map(str, args))

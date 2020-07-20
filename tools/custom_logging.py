@@ -1,18 +1,30 @@
 """Setting up logging using QGIS, file, Sentry..."""
 
 import logging
+from enum import Enum
+from logging.handlers import RotatingFileHandler
+from typing import Optional, Any
 
+from PyQt5.QtCore import QSettings
+from qgis._gui import QgisInterface
 from qgis.core import QgsMessageLog, Qgis
 
 from .i18n import tr
-from .resources import plugin_name
+from .resources import plugin_name, plugin_path, setting_key
 
 PLUGIN_NAME = plugin_name()
 
-__copyright__ = "Copyright 2019, 3Liz"
-__license__ = "GPL version 3"
-__email__ = "info@3liz.org"
+__copyright__ = "Copyright 2020, Gispo Ltd"
+__license__ = "GPL version 2"
+__email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
+
+
+class LogTarget(Enum):
+    """ Log target with default logging level as value """
+    STREAM = 'DEBUG'
+    FILE = 'INFO'
+    BAR = 'INFO'
 
 
 def qgis_level(logging_level):
@@ -25,7 +37,7 @@ def qgis_level(logging_level):
     https://docs.python.org/3/library/logging.html#levels
 
     :param logging_level: The Logging level
-    :type logging_level: basestring
+    :target logging_level: basestring
 
     :return: The QGIS Level
     :rtype: Qgis.MessageLevel
@@ -44,6 +56,21 @@ def qgis_level(logging_level):
     return Qgis.Info
 
 
+def bar_msg(details: Any = "", duration: Optional[int] = None, success: bool = False):
+    """
+    Helper function to construct extra arguments for message bar logger message
+
+    :param details: Longer body of the message. Can be set to empty string.
+    :param duration: can be used to specify the message timeout in seconds. If ``duration``
+        is set to 0, then the message must be manually dismissed by the user.
+    :param success: Whether the message is success message or not
+    """
+    args = {'details': str(details), 'succress': success}
+    if duration is not None:
+        args['duration'] = duration
+    return args
+
+
 class QgsLogHandler(logging.Handler):
     """A logging handler that will log messages to the QGIS logging console."""
 
@@ -57,6 +84,7 @@ class QgsLogHandler(logging.Handler):
                 logged.
         """
         try:
+            # noinspection PyCallByClass,PyTypeChecker
             QgsMessageLog.logMessage(
                 record.getMessage(), PLUGIN_NAME, qgis_level(record.levelname)
             )
@@ -69,7 +97,73 @@ class QgsLogHandler(logging.Handler):
             QgsMessageLog.logMessage(message, PLUGIN_NAME, Qgis.Critical)
 
 
-def add_logging_handler_once(logger, handler):
+class QgsMessageBarFilter(logging.Filter):
+    """
+    A logging filter to decide whether the message should be passed and
+    to QgsMessageBarHandler as enriched
+
+    Description of keys:
+        details: Longer body of the message. Can be set to empty string.
+        duration: can be used to specify the message timeout in seconds. If ``duration``
+            is set to 0, then the message must be manually dismissed by the user.
+        success: boolean, defaults to False. Whether the message is success message or not
+    """
+
+    def filter(self, record: logging.LogRecord):
+        args = record.__dict__
+        if "details" not in args:
+            return False
+
+        record.qgis_level = qgis_level(record.levelname) if not args.get("success", False) else Qgis.Success
+        record.duration = args.get("duration", self.bar_msg_duration(record.levelname))
+        return True
+
+    @staticmethod
+    def bar_msg_duration(logging_level: str) -> int:
+        """Check default duration for messages in message bar based on level.
+
+        :param logging_level: The Logging level
+        :return: duration in seconds
+        """
+        if logging_level == "CRITICAL":
+            return 12
+        elif logging_level == "ERROR":
+            return 10
+        elif logging_level == "WARNING":
+            return 6
+        elif logging_level == "INFO":
+            return 4
+        elif logging_level == "DEBUG":
+            return 4
+
+        return 4
+
+
+class QgsMessageBarHandler(logging.Handler):
+    """A logging handler that will log messages to the QGIS message bar."""
+
+    def __init__(self, iface: QgisInterface):
+        self.iface = iface
+        logging.Handler.__init__(self)
+
+    def emit(self, record: logging.LogRecord):
+        """
+        Push info message to the QGIS message bar. Pass "extra" kwarg to logger to use with
+        mandatory "details" key.
+
+        :param record: logging record enriched with extra information from QgsMessageBarFilter
+        """
+        try:
+            # noinspection PyUnresolvedReferences
+            self.iface.messageBar().pushMessage(title=record.message,
+                                                text=record.details,
+                                                level=record.qgis_level,
+                                                duration=record.duration)
+        except MemoryError:
+            pass  # This is handled in QgsLogHandler
+
+
+def add_logging_handler_once(logger, handler) -> bool:
     """A helper to add a handler to a logger, ensuring there are no duplicates.
 
     :param logger: Logger that should have a handler added.
@@ -91,32 +185,64 @@ def add_logging_handler_once(logger, handler):
     return True
 
 
-def setup_logger(logger_name):
+def get_log_level_key(target: LogTarget) -> str:
+    """Finds QSetting key for log level """
+    return setting_key("log_level", target.name.lower())
+
+
+def get_log_level(target: LogTarget) -> int:
+    """Finds log level of the target """
+    return logging.getLevelName(QSettings().value(get_log_level_key(target), target.value, str))
+
+
+def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> logging.Logger:
     """Run once when the module is loaded and enable logging.
 
     :param logger_name: The logger name that we want to set up.
-    :type logger_name: basestring
+    :param iface: QGIS Interface. Add this to enable message bar support
 
     Borrowed heavily from this:
     http://docs.python.org/howto/logging-cookbook.html
 
     Now to log a message do::
        LOGGER.debug('Some debug message')
+
+    And to a message bar::
+       LOGGER.info('Some bar message', extra={'details': 'details'})
+       LOGGER.info('Some bar message', extra=bar_msg('details')) # With helper function
     """
+
+    stream_level = get_log_level(LogTarget.STREAM)
+    file_level = get_log_level(LogTarget.FILE)
+    bar_level = get_log_level(LogTarget.BAR)
+
     logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(min(stream_level, file_level))
+
+    file_formatter = logging.Formatter("%(asctime)s - [%(levelname)-7s] - %(filename)s:%(lineno)d : %(message)s",
+                                       "%d.%m.%Y %H:%M:%S")
+    file_handler = RotatingFileHandler(plugin_path("logs", f"{logger_name}.log"), maxBytes=1024 * 1024 * 2)
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(file_level)
+    add_logging_handler_once(logger, file_handler)
 
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(stream_level)
     console_formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        "%(asctime)s - %(levelname)s - %(message)s"
     )
     console_handler.setFormatter(console_formatter)
     add_logging_handler_once(logger, console_handler)
 
     qgis_handler = QgsLogHandler()
-    qgis_formatter = logging.Formatter("%(levelname)s - %(message)s")
+    qgis_formatter = logging.Formatter("[%(levelname)-7s]- %(message)s")
     qgis_handler.setFormatter(qgis_formatter)
     add_logging_handler_once(logger, qgis_handler)
+
+    if iface is not None:
+        qgis_msg_bar_handler = QgsMessageBarHandler(iface)
+        qgis_msg_bar_handler.addFilter(QgsMessageBarFilter())
+        qgis_msg_bar_handler.setLevel(bar_level)
+        add_logging_handler_once(logger, qgis_msg_bar_handler)
 
     return logger

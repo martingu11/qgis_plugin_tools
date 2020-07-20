@@ -20,10 +20,30 @@ The module is helping you with:
 * running pylint checks
 * providing some common widgets/code for plugins
 
+### How to install it
+
+* Go to the root folder of your plugin code source
+* `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
+
+### How to use it
+
+For setting up the logging (usually in main plugin file):
+```python
+from .qgis_plugin_tools.tools.resources import plugin_name
+from .qgis_plugin_tools.tools.custom_logging import setup_logger
+
+# Setup without message bar support
+# setup_logger(plugin_name())
+
+# Setup with QGIS interface to add message bar support
+setup_logger(plugin_name(), iface)
+```
+
 To use the logging system:
 ```python
 import logging
 from .qgis_plugin_tools.tools.resources import plugin_name
+from .qgis_plugin_tools.tools.custom_logging import bar_msg
 
 # Top of the file
 LOGGER = logging.getLogger(plugin_name())
@@ -34,21 +54,12 @@ LOGGER.info('Log some info here')
 LOGGER.warning('Log a warning here')
 LOGGER.error('Log an error here')
 LOGGER.critical('Log a critical error here')
-```
 
-### How to install it
-
-* Go to the root folder of your plugin code source
-* `git submodule add https://github.com/3liz/qgis_plugin_tools.git`
-
-### How to use it
-
-For setting up the logging:
-```python
-from .qgis_plugin_tools.tools.resources import plugin_name
-from .qgis_plugin_tools.tools.custom_logging import setup_logger
-
-setup_logger(plugin_name())
+# These are logged to the message bar in addition to normal logging
+LOGGER.info('Msg bar message', extra=bar_msg("some details here"))
+LOGGER.info('Msg bar message', extra=bar_msg("some details here", success=True))
+LOGGER.warning('Msg bar message', extra={'details:': "some details here"})
+LOGGER.error('Msg bar message', extra=bar_msg("some details here", duration=10))
 ```
 
 For setting up the translation file:
@@ -90,11 +101,3 @@ Plugin `Foo` root folder:
 * `.gitmodules`
 * `.gitignore`
 * `Makefile`
-
-## Plugins using this module
-
-* [LizSync](https://github.com/3liz/qgis-lizsync-plugin)
-* [QuickOSM](https://github.com/3liz/QuickOSM)
-* [DSVI](https://github.com/3liz/qgis_drain_sewer_visual_inspection)
-* [Layer Board](https://github.com/3liz/QgisLayerBoardPlugin/)
-* [Lizmap](https://github.com/3liz/lizmap-plugin/)
