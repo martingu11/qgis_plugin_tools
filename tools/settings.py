@@ -4,7 +4,7 @@ from typing import Optional, Union
 from PyQt5.QtCore import QVariant
 from qgis.core import QgsSettings
 
-from Qaava.qgis_plugin_tools.tools.resources import plugin_name
+from .resources import plugin_name
 
 
 def setting_key(*args) -> str:
