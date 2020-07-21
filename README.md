@@ -15,7 +15,6 @@ The module is helping you with:
 * fetching compiled translation file in `resources/i18n` folder
 * removing QRC resources file easily
 * translate using the `i18n.tr()` function.
-* launching tests on Travis
 * managing the release process : zip, upload on plugins.qgis.org, tag, GitHub release
 * running pylint checks
 * providing some common widgets/code for plugins
@@ -26,6 +25,8 @@ The module is helping you with:
 * `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
 
 ### How to use it
+
+#### Logging
 
 For setting up the logging (usually in main plugin file):
 ```python
@@ -62,6 +63,7 @@ LOGGER.warning('Msg bar message', extra={'details:': "some details here"})
 LOGGER.error('Msg bar message', extra=bar_msg("some details here", duration=10))
 ```
 
+### Translating
 For setting up the translation file:
 ```python
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
@@ -76,16 +78,57 @@ if file_path:
 
 ```
 
-* Using the plugin upload function, check the `--help` of the `plugin_upload.py` file.
-For instance, you can setup environment variable in your bash for your credentials.
+### Using PluginMaker
+There is a script [plugin_maker.py](infrastructure/plugin_maker.py), which can
+be used to replace Makefile and pb_tool in plugin build, deployment, translation and packaging processes.
+To use it, create a python script (eg. build.py) in the root of the plugin and
+populate it like following:
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import glob
+
+from qgis_plugin_tools.infrastructure.plugin_maker import PluginMaker
+
+'''
+#################################################
+# Edit the following to match the plugin
+#################################################
+'''
+
+locales = ['fi']
+profile = 'foo'
+py_files = [fil for fil in glob.glob("**/*.py", recursive=True) if "test/" not in fil]
+ui_files = list(glob.glob("**/*.ui", recursive=True))
+resources = list(glob.glob("**/*.qrc", recursive=True))
+extra_dirs = ["resources", "logs"]
+compiled_resources = ["resources.py"]
+
+
+PluginMaker(py_files=py_files, ui_files=ui_files, resources=resources, extra_dirs=extra_dirs,
+            compiled_resources=compiled_resources, locales=locales, profile=profile)
+```
+And use it like:
+```shell script
+python build.py -h # Show available commands
+python build.py deploy
+python build.py transup
+# etc.
+```
+
+
+
+
 
 ## Plugin tree example
 
 Plugin `Foo` root folder:
-* `.docker`
 * `plugin_name`
+  * **`logs/`**
+    * `.gitignore`
   * `qgis_plugins_tools/` submodule
-  * `resources/`
+  * **`resources/`**
     * `i18n/`
       * `fr.ts`
       * `fr.qm`
@@ -97,7 +140,7 @@ Plugin `Foo` root folder:
   * `__init__.py`
   * `foo.py`
   * `metadata.txt`
-* `.gitattributes
+* **`.gitattributes`**
 * `.gitmodules`
 * `.gitignore`
-* `Makefile`
+* `build.py`
