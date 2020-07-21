@@ -10,7 +10,8 @@ from qgis._gui import QgisInterface
 from qgis.core import QgsMessageLog, Qgis
 
 from .i18n import tr
-from .resources import plugin_name, plugin_path, setting_key
+from .resources import plugin_name, plugin_path
+from .settings import setting_key
 
 PLUGIN_NAME = plugin_name()
 
@@ -94,6 +95,7 @@ class QgsLogHandler(logging.Handler):
                 "handle the full log"
             ).format(PLUGIN_NAME)
             print(message)
+            # noinspection PyCallByClass,PyTypeChecker
             QgsMessageLog.logMessage(message, PLUGIN_NAME, Qgis.Critical)
 
 

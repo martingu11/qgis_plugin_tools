@@ -98,12 +98,3 @@ def load_ui(*args):
     """
     ui_class, _ = uic.loadUiType(resources_path("ui", *args))
     return ui_class
-
-
-def setting_key(*args) -> str:
-    """
-
-    :param args List of path elements e.g. ['img', 'logos', 'image.png']
-    :return:
-    """
-    return join(plugin_name(), *map(str, args))
