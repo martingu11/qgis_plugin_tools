@@ -23,7 +23,7 @@ __revision__ = "$Format:%H$"
 
 class LogTarget(Enum):
     """ Log target with default logging level as value """
-    STREAM = 'DEBUG'
+    STREAM = 'INFO'
     FILE = 'INFO'
     BAR = 'INFO'
 
@@ -192,9 +192,14 @@ def get_log_level_key(target: LogTarget) -> str:
     return setting_key("log_level", target.name.lower())
 
 
+def get_log_level_name(target: LogTarget) -> str:
+    """Finds the log level name of the target """
+    return QSettings().value(get_log_level_key(target), target.value, str)
+
+
 def get_log_level(target: LogTarget) -> int:
     """Finds log level of the target """
-    return logging.getLevelName(QSettings().value(get_log_level_key(target), target.value, str))
+    return logging.getLevelName(get_log_level_name(target))
 
 
 def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> logging.Logger:
@@ -230,9 +235,7 @@ def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> log
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(stream_level)
-    console_formatter = logging.Formatter(
-        "%(asctime)s - %(levelname)s - %(message)s"
-    )
+    console_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%d.%m.%Y %H:%M:%S")
     console_handler.setFormatter(console_formatter)
     add_logging_handler_once(logger, console_handler)
 
