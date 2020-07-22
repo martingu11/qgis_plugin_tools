@@ -112,3 +112,5 @@ database/postgresql-*.jar.*
 database/schemaspy-*.jar.*
 
 .DS_Store
+
+qgis_plugin_tools.zip

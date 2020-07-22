@@ -6,6 +6,7 @@ import subprocess
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
 
@@ -18,6 +19,7 @@ from ..tools.resources import plugin_name, resources_path, plugin_path
 
 PLUGINNAME = plugin_name()
 
+SUBMODULES = ["qgis_plugin_tools"]
 # This should be only edited for windows environment
 QGIS_INSTALLATION_DIR = os.path.join("C:", "OSGeo4W64", "bin")
 
@@ -88,7 +90,7 @@ class PluginMaker:
 
     def __init__(self, py_files, ui_files, resources=RESOURCES_SRC, extra_dirs=EXTRA_DIRS,
                  extras=EXTRAS, compiled_resources=COMPILED_RESOURCE_FILES, locales=LOCALES, profile=PROFILE,
-                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE):
+                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES):
         global VERBOSE
         self.py_files = py_files
         self.ui_files = ui_files
@@ -102,6 +104,7 @@ class PluginMaker:
         self.pyrcc = pyrcc
         self.qgis_dir = os.path.join(dr, "QGIS", "QGIS3", "profiles", profile)
         self.plugin_dir = os.path.join(str(Path.home()), self.qgis_dir, "python", "plugins", PLUGINNAME)
+        self.submodules = submodules
         VERBOSE = verbose
 
         # git-like usage https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
@@ -171,7 +174,7 @@ Put -h after command to see available optional arguments if any
         parser.set_defaults(test=False)
         args = parser.parse_args(sys.argv[2:])
         if args.version is None:
-            echo("Give valid version number")
+            echo("Give valid version number", force=True)
             parser.print_help()
             exit(1)
 
@@ -180,6 +183,15 @@ Put -h after command to see available optional arguments if any
 
         pkg_command = ["git", "archive", f"--prefix={PLUGINNAME}/", "-o", f"{PLUGINNAME}.zip", args.version]
         self.run_command(pkg_command)
+
+        for submodule in self.submodules:
+            d = plugin_path(submodule)
+            pkg_command = ["git", "archive", f"--prefix={PLUGINNAME}/{submodule}/", "-o", f"{submodule}.zip",
+                           "master"]
+            self.run_command(pkg_command, d=d)
+        zips = [f"{PLUGINNAME}.zip"] + [os.path.abspath(os.path.join(plugin_path(submodule), f"{submodule}.zip")) for
+                                        submodule in self.submodules]
+        self.join_zips(zips)
         echo(f"Created package: {PLUGINNAME}.zip")
 
     def test(self):
@@ -210,13 +222,17 @@ Put -h after command to see available optional arguments if any
             self.run_command(args, force_show_output=True)
 
     @staticmethod
-    def run_command(args, force_show_output=False):
-        echo(" ".join(args))
-        pros = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    def run_command(args, d=None, force_show_output=False):
+        cmd = " ".join(args)
+        if d is not None:
+            cmd = f"cd {d} && " + cmd
+        echo(cmd, force=force_show_output)
+        pros = subprocess.Popen(args, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pros.communicate()
         echo(stdout, force=force_show_output)
         if len(stderr):
             echo(stderr, force=True)
+            print("------beging of stderr----------:\n", stderr, "\n-----end of stderr-----")
             raise ValueError("Stopping now due to error in stderr!")
 
     @staticmethod
@@ -235,3 +251,17 @@ Put -h after command to see available optional arguments if any
             dest = os.path.normpath(target_dir + file)
             echo(f"cp {file} {dest}")
             shutil.copy(file, dest)
+
+    @staticmethod
+    def join_zips(zips):
+        """
+        https://stackoverflow.com/a/10593823/10068922
+
+        Open the first zip file as append and then read all
+        subsequent zip files and append to the first one
+        """
+        with ZipFile(zips[0], 'a') as z1:
+            for fname in zips[1:]:
+                zf = ZipFile(fname, 'r')
+                for n in zf.namelist():
+                    z1.writestr(n, zf.open(n).read())
