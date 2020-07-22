@@ -1,7 +1,7 @@
 """Setting up logging using QGIS, file, Sentry..."""
 
 import logging
-from enum import Enum
+from enum import Enum, unique
 from logging.handlers import RotatingFileHandler
 from typing import Optional, Any
 
@@ -21,11 +21,20 @@ __email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
 
+@unique
 class LogTarget(Enum):
     """ Log target with default logging level as value """
-    STREAM = 'INFO'
-    FILE = 'INFO'
-    BAR = 'INFO'
+    STREAM = {'id': 'stream', 'default': 'INFO'}
+    FILE = {'id': 'file', 'default': 'INFO'}
+    BAR = {'id': 'bar', 'default': 'INFO'}
+
+    @property
+    def id(self):
+        return self.value['id']
+
+    @property
+    def default_level(self):
+        return self.value['default']
 
 
 def qgis_level(logging_level):
@@ -189,12 +198,12 @@ def add_logging_handler_once(logger, handler) -> bool:
 
 def get_log_level_key(target: LogTarget) -> str:
     """Finds QSetting key for log level """
-    return setting_key("log_level", target.name.lower())
+    return setting_key("log_level", target.id)
 
 
 def get_log_level_name(target: LogTarget) -> str:
     """Finds the log level name of the target """
-    return QSettings().value(get_log_level_key(target), target.value, str)
+    return QSettings().value(get_log_level_key(target), target.default_level, str)
 
 
 def get_log_level(target: LogTarget) -> int:
