@@ -39,7 +39,8 @@ def plugin_name():
     global PLUGIN_NAME
     if PLUGIN_NAME == "":
         metadata = metadata_config()
-        name = metadata["general"]["name"]
+        name: str = metadata["general"]["name"]
+        name = name.replace(" ", "").strip()
         PLUGIN_NAME = name
     return PLUGIN_NAME
 
