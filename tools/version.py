@@ -1,6 +1,8 @@
 """Tools about version."""
+from typing import Tuple
 
 from .resources import metadata_config
+from osgeo import osr
 
 
 def format_version_integer(version_string: str):
@@ -18,3 +20,10 @@ def version(remove_v_prefix=True) -> str:
     if v.startswith("v") and remove_v_prefix:
         v = v[1:]
     return v
+
+
+def proj_version() -> Tuple[int, int]:
+    """Returns PROJ library version """
+    major: int = osr.GetPROJVersionMajor()
+    minor: int = osr.GetPROJVersionMinor()
+    return major, minor

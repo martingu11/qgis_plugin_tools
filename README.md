@@ -18,6 +18,7 @@ The module is helping you with:
 * managing the release process : zip, upload on plugins.qgis.org, tag, GitHub release
 * running pylint checks
 * providing some common widgets/code for plugins
+* setting up a debug server
 
 ### How to install it
 
@@ -78,6 +79,17 @@ if file_path:
 
 ```
 
+### Debug server
+Plugin can connect to already running debug server with following code in the plugin's `__init__.py` file.
+
+```python
+from .qgis_plugin_tools.infrastructure.debugging import setup_pydevd
+
+# It is a good idea to set up an environment variable to control this. Like:
+# if os.environ.get('QGIS_PLUGIN_DEBUGGER') == 'pydevd':
+setup_pydevd()
+```
+
 ### Using PluginMaker
 There is a script [plugin_maker.py](infrastructure/plugin_maker.py), which can
 be used to replace Makefile and pb_tool in plugin build, deployment, translation and packaging processes.
@@ -116,9 +128,6 @@ python build.py deploy
 python build.py transup
 # etc.
 ```
-
-
-
 
 
 ## Plugin tree example
