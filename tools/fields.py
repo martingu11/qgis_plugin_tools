@@ -1,15 +1,19 @@
+from typing import Type
+
+from PyQt5.QtWidgets import (QWidget, QCheckBox, QComboBox, QDateEdit)
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsApplication, QgsFields
+from qgis.gui import QgsSpinBox, QgsDoubleSpinBox, QgsDateTimeEdit
 
-__copyright__ = "Copyright 2019, 3Liz"
+__copyright__ = "Copyright 2020, Gispo"
 __license__ = "GPL version 3"
-__email__ = "info@3liz.org"
+__email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
 
 # noinspection PyCallByClass,PyArgumentList
-def variant_type_icon(field_type) -> QIcon:
+def variant_type_icon(field_type: QVariant) -> QIcon:
     if field_type == QVariant.Bool:
         return QgsApplication.getThemeIcon("/mIconFieldBool.svg")
     elif field_type in [
@@ -33,6 +37,42 @@ def variant_type_icon(field_type) -> QIcon:
         return QgsApplication.getThemeIcon("/mIconFieldBinary.svg")
     else:
         return QIcon()
+
+
+def widget_for_field(field_type: QVariant) -> QWidget:
+    q_combo_box = QComboBox()
+    q_combo_box.setEditable(True)
+
+    if field_type == QVariant.Bool:
+        return QCheckBox()
+    elif field_type in [
+        QVariant.Int,
+        QVariant.UInt,
+        QVariant.LongLong,
+        QVariant.ULongLong,
+    ]:
+        return QgsSpinBox()
+    elif field_type == QVariant.Double:
+        return QgsDoubleSpinBox()
+    elif field_type == QVariant.String:
+        return q_combo_box
+    elif field_type == QVariant.Date:
+        return QDateEdit()
+    elif field_type == QVariant.DateTime:
+        return QgsDateTimeEdit()
+    elif field_type == QVariant.Time:
+        return QgsDateTimeEdit()
+    elif field_type == QVariant.ByteArray:
+        return q_combo_box
+    else:
+        return q_combo_box
+
+
+def string_value_for_widget(widget: Type[QWidget]) -> str:
+    if isinstance(widget, QComboBox):
+        return widget.currentText()
+    else:
+        return str(widget.text())
 
 
 def provider_fields(fields):
