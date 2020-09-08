@@ -1,7 +1,7 @@
 """I18n tools."""
 
 from os.path import join
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Any
 
 from qgis.PyQt.QtCore import QLocale, QFileInfo
 from qgis.PyQt.QtWidgets import QApplication
@@ -46,14 +46,16 @@ def setup_translation(file_pattern: str = "{}.qm", folder: Optional[str] = None)
     return locale, None
 
 
-def tr(text: str, context: str = "@default") -> str:
+def tr(text: str, *args: Any, context: str = "@default", ) -> str:
     """Get the translation for a string using Qt translation API.
 
     We implement this ourselves since we do not inherit QObject.
 
     :param text: String for translation.
+    :param args: arguments to use in formatting.
+    :param context: Context of the translation.
 
     :returns: Translated version of message.
     """
     # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-    return QApplication.translate(context, text)
+    return QApplication.translate(context, text).format(*args)

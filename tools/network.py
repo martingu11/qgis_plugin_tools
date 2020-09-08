@@ -36,6 +36,6 @@ def fetch(url: str, encoding: str = ENCODING) -> str:
     reply = request_blocking.reply()
     reply_error = reply.error()
     if reply_error != QNetworkReply.NoError:
-        raise QgsPluginNetworkException(tr('Request failed') + ':\n\n' + reply.errorString())
+        raise QgsPluginNetworkException(tr('Request failed: {}', reply.errorString()))
 
     return bytes(reply.content()).decode(ENCODING)
