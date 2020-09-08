@@ -3,7 +3,7 @@
 import logging
 from enum import Enum, unique
 from logging.handlers import RotatingFileHandler
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 
 from PyQt5.QtCore import QSettings
 from qgis._gui import QgisInterface
@@ -66,7 +66,7 @@ def qgis_level(logging_level):
     return Qgis.Info
 
 
-def bar_msg(details: Any = "", duration: Optional[int] = None, success: bool = False):
+def bar_msg(details: Any = "", duration: Optional[int] = None, success: bool = False) -> Dict[str, str]:
     """
     Helper function to construct extra arguments for message bar logger message
 
@@ -75,7 +75,7 @@ def bar_msg(details: Any = "", duration: Optional[int] = None, success: bool = F
         is set to 0, then the message must be manually dismissed by the user.
     :param success: Whether the message is success message or not
     """
-    args = {'details': str(details), 'succress': success}
+    args = {'details': str(details), 'success': success}
     if duration is not None:
         args['duration'] = duration
     return args
