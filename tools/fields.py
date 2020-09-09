@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Union
 
 from PyQt5.QtWidgets import (QWidget, QCheckBox, QComboBox, QDateEdit)
 from qgis.PyQt.QtCore import QVariant
@@ -68,9 +68,14 @@ def widget_for_field(field_type: QVariant) -> QWidget:
         return q_combo_box
 
 
-def string_value_for_widget(widget: Type[QWidget]) -> str:
+def value_for_widget(widget: Type[QWidget]) -> Union[str, bool]:
     if isinstance(widget, QComboBox):
         return widget.currentText()
+    elif isinstance(widget, QCheckBox):
+        return widget.isChecked()
+    elif isinstance(widget, QgsDateTimeEdit):
+
+        return widget.dateTime().toString('yyyy-MM-dd hh:mm:ss')
     else:
         return str(widget.text())
 

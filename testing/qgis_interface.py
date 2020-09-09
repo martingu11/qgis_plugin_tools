@@ -26,7 +26,7 @@ __copyright__ = (
 import logging
 
 from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
-from qgis.core import QgsProject, QgsVectorLayer
+from qgis.core import QgsProject, QgsVectorLayer, QgsRelationManager
 from qgis.gui import QgsMapCanvas
 
 LOGGER = logging.getLogger('QGIS')
@@ -94,7 +94,11 @@ class QgisInterface(QObject):
     def newProject(self):
         """Create new project."""
         # noinspection PyArgumentList
-        QgsProject.instance().removeAllMapLayers()
+        instance = QgsProject.instance()
+        instance.removeAllMapLayers()
+        relation_manager: QgsRelationManager = instance.relationManager()
+        for relation in relation_manager.relations():
+            relation_manager.removeRelation(relation)
         self._layers = []
 
     # ---------------- API Mock for QgsInterface follows -------------------
