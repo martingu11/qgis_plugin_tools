@@ -27,7 +27,7 @@ The module is helping you with:
 * Go to the root folder of your plugin code source
 * `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
 
-##### To new plugin
+#### To new plugin
 
 This will create needed structure for your plugin
 ```
