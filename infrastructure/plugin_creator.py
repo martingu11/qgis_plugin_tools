@@ -13,6 +13,7 @@ TEMPLATE_PLUGIN_DIR = os.path.join(TEMPLATE_DIR, 'plugin')
 ROOT_FILES = [
     '.qgis-plugin-ci',
     'requirements.txt',
+    'README.md',
     'LICENSE',
     'docs/development.md',
     'CHANGELOG.md',
