@@ -62,7 +62,9 @@ class PluginCreator:
             content = fil.read()
         content = (content.replace('<plugin_name>', PLUGIN_NAME)
                    .replace('<organization>', self.organization)
-                   .replace('<repo>', self.repo))
+                   .replace('<repo>', self.repo)
+                   .replace('#<commented_out>', '')
+                   )
         with open(dst_file, 'w') as fil:
             fil.write(content)
 
