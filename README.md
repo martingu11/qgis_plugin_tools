@@ -23,24 +23,29 @@ The module is helping you with:
 
 ### How to install it
 
-#### To existing plugin
-* Go to the root folder of your plugin code source
-* `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
-
-#### To new plugin
-
+#### For new plugin
 This will create needed structure for your plugin
-```
-git init
-mkdir TestPlugin
-cd TestPlugin
-git submodule add https://github.com/GispoCoding/qgis_plugin_tools
-cp qgis_plugin_tools/infrastructure/creator.py .
-python creator.py -o githubOrganization -r repositoryProjectName
-rm creator.py
-```
 
-Now edit metadata.txt with description etc. and commit changes.
+1. Create new repository in Github (here using: https://github.com/GispoCoding/test-plugin-name)
+2. Follow these steps
+    ```shell script
+    mkdir test-plugin-name
+    cd test-plugin-name
+    git init
+    git remote add origin git@github.com:GispoCoding/test-plugin-name
+    mkdir TestPlugin
+    cd TestPlugin
+    git submodule add https://github.com/GispoCoding/qgis_plugin_tools
+    cp qgis_plugin_tools/infrastructure/creator.py .
+    python creator.py -o GispoCoding -r test-plugin-name # Replace with your information
+    rm creator.py
+    ```
+3. Now edit metadata.txt with description etc. and commit changes.
+
+#### For existing plugin
+1. Go to the root folder of your plugin code source
+2. `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
+
 
 ### How to use it
 
@@ -86,7 +91,7 @@ For setting up the translation file:
 ```python
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 
-from .qgis_plugin_tools.tools.i18n import setup_translation
+from .qgis_plugin_tools.tools.i18n import setup_translation, tr
 
 locale, file_path = setup_translation()
 if file_path:
@@ -94,6 +99,10 @@ if file_path:
     self.translator.load(file_path)
     QCoreApplication.installTranslator(self.translator)
 
+# Wrap translatable string with tr
+tr('This will be translated')
+tr('Meaning of life is {}?', 42)
+tr('{} + {} is definitely {}', 1,1,3)
 ```
 
 ### Debug server
@@ -150,23 +159,24 @@ python build.py transup
 ## Plugin tree example
 
 Plugin `Foo` root folder:
-* `plugin_name`
-  * **`logs/`**
-    * `.gitignore`
-  * `qgis_plugins_tools/` submodule
-  * **`resources/`**
-    * `i18n/`
-      * `fr.ts`
-      * `fr.qm`
-    * `ui/`
-      * `main_dialog.ui`
-    * `icons/`
-      * `my_icon.svg`
-  * `test/`
-  * `__init__.py`
-  * `foo.py`
-  * `metadata.txt`
-* **`.gitattributes`**
-* `.gitmodules`
+* `plugin_repo`
+* **`.gitmodules`**
+* `.gitattributes`
 * `.gitignore`
-* `build.py`
+    * `plugin_name`
+      * **`logs/`**
+        * `.gitignore`
+      * `qgis_plugins_tools/` submodule
+      * **`resources/`**
+        * `i18n/`
+          * `fr.ts`
+          * `fr.qm`
+        * `ui/`
+          * `main_dialog.ui`
+        * `icons/`
+          * `my_icon.svg`
+      * `test/`
+      * `__init__.py`
+      * `foo.py`
+      * `metadata.txt`
+      * `build.py`
