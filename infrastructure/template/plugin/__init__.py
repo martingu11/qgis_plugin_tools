@@ -1,3 +1,4 @@
+# <commented_out>import os
 # <commented_out>from .qgis_plugin_tools.infrastructure.debugging import setup_pydevd
 
 # <commented_out>if os.environ.get('QGIS_PLUGIN_USE_DEBUGGER') == 'pydevd':
