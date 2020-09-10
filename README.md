@@ -9,6 +9,7 @@ As it's a submodule, you can configure your GIT to auto update the submodule com
 ### How to use it
 
 The module is helping you with:
+* creating plugin from scratch
 * setting up some logging (QgsMessageLog, file log, remote logs...)
 * fetching resources in `resources` folder
 * fetching compiled UI file in `resources/ui` folder
@@ -22,8 +23,24 @@ The module is helping you with:
 
 ### How to install it
 
+#### To existing plugin
 * Go to the root folder of your plugin code source
 * `git submodule add https://github.com/GispoCoding/qgis_plugin_tools.git`
+
+##### To new plugin
+
+This will create needed structure for your plugin
+```
+git init
+mkdir TestPlugin
+cd TestPlugin
+git submodule add https://github.com/GispoCoding/qgis_plugin_tools
+cp qgis_plugin_tools/infrastructure/creator.py .
+python creator.py -o githubOrganization -r repositoryProjectName
+rm creator.py
+```
+
+Now edit metadata.txt with description etc. and commit changes.
 
 ### How to use it
 
