@@ -64,6 +64,7 @@ class PluginCreator:
                    .replace('<organization>', self.organization)
                    .replace('<repo>', self.repo)
                    .replace('#<commented_out>', '')
+                   .replace('# <commented_out>', '')  # Automatic formatting might cause these
                    )
         with open(dst_file, 'w') as fil:
             fil.write(content)
