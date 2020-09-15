@@ -103,7 +103,7 @@ class QgsLogHandler(logging.Handler):
                 "Due to memory limitations on this machine, the plugin {} can not "
                 "handle the full log"
             ).format(PLUGIN_NAME)
-            print(message)
+            # print(message)
             # noinspection PyCallByClass,PyTypeChecker
             QgsMessageLog.logMessage(message, PLUGIN_NAME, Qgis.Critical)
 
@@ -258,5 +258,24 @@ def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> log
         qgis_msg_bar_handler.addFilter(QgsMessageBarFilter())
         qgis_msg_bar_handler.setLevel(bar_level)
         add_logging_handler_once(logger, qgis_msg_bar_handler)
+
+    return logger
+
+
+def setup_task_logger(logger_name: str) -> logging.Logger:
+    """ Run once when the module is loaded and enable logging during tasks.
+
+    :param logger_name: The logger name that we want to set up.
+    """
+
+    stream_level = get_log_level(LogTarget.STREAM)
+    logger = logging.getLogger(f"{logger_name}_task")
+    logger.setLevel(stream_level)
+    logger.handlers = []
+
+    qgis_handler = QgsLogHandler()
+    qgis_formatter = logging.Formatter("[%(levelname)-7s]- %(message)s")
+    qgis_handler.setFormatter(qgis_formatter)
+    add_logging_handler_once(logger, qgis_handler)
 
     return logger

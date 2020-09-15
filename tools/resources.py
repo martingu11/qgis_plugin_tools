@@ -45,6 +45,13 @@ def plugin_name():
     return PLUGIN_NAME
 
 
+def task_logger_name() -> str:
+    """
+    Returns the name for task logger
+    """
+    return f"{plugin_name()}_task"
+
+
 def metadata_config() -> configparser:
     """Get the INI config parser for the metadata file.
 
