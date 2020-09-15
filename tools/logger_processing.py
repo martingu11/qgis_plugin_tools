@@ -64,4 +64,4 @@ class LoggerProcessingFeedBack(QgsProcessingFeedback):
         self._last = text
         self.last_report_error = text
         if self.use_logger:
-            LOGGER.critical(text)
+            LOGGER.exception(text)
