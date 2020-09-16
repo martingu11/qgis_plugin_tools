@@ -1,13 +1,15 @@
+import logging
+
 from qgis.core import QgsProcessingFeedback
 
-from .custom_logging import setup_logger, plugin_name
+from .custom_logging import plugin_name
 
-__copyright__ = "Copyright 2019, 3Liz"
+__copyright__ = "Copyright 2020, Gispo Ltd"
 __license__ = "GPL version 3"
-__email__ = "info@3liz.org"
+__email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
-LOGGER = setup_logger(plugin_name())
+LOGGER = logging.getLogger(plugin_name())
 
 
 class LoggerProcessingFeedBack(QgsProcessingFeedback):

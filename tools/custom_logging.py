@@ -16,7 +16,7 @@ from .settings import setting_key
 PLUGIN_NAME = plugin_name()
 
 __copyright__ = "Copyright 2020, Gispo Ltd"
-__license__ = "GPL version 2"
+__license__ = "GPL version 3"
 __email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
