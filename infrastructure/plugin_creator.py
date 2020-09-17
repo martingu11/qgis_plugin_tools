@@ -29,6 +29,8 @@ PLUGIN_FILES = [
     'logs/.gitignore',
     '__init__.py',
     'plugin.py',
+    '.editorconfig',
+    '.gitattributes',
     'resources/ui/.gitignore',
     'resources/i18n/.gitignore',
     'resources/.gitignore',
