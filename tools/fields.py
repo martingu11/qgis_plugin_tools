@@ -68,14 +68,15 @@ def widget_for_field(field_type: QVariant) -> QWidget:
         return q_combo_box
 
 
-def value_for_widget(widget: Type[QWidget]) -> Union[str, bool]:
+def value_for_widget(widget: Type[QWidget]) -> Union[str, bool, float, int]:
     if isinstance(widget, QComboBox):
         return widget.currentText()
     elif isinstance(widget, QCheckBox):
         return widget.isChecked()
     elif isinstance(widget, QgsDateTimeEdit):
-
         return widget.dateTime().toString('yyyy-MM-dd hh:mm:ss')
+    elif isinstance(widget, QgsSpinBox) or isinstance(widget, QgsDoubleSpinBox):
+        return widget.value()
     else:
         return str(widget.text())
 
