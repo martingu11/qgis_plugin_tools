@@ -45,7 +45,27 @@ to run tests with:
 python build.py test
 ```
 
-#### Translating
+#### Translating with transifex
+
+Fill in `transifex_coordinator` (Transifex username) and `transifex_organization`
+in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
+
+##### Pushing / creating new translations
+* First install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and
+  [qgis-plugin-ci](https://github.com/opengisch/qgis-plugin-ci)
+* Run `qgis-plugin-ci push-translation <your-transifex-token>`
+* Go to your Transifex site, add some languages and start translating
+* Copy [push_translations.yml](push_translations.yml) file to [workflows](../.github/workflows) folder
+    to enable automatic pushing after commits to master
+* Add this badge ![](https://github.com/<organization>/<repo>/workflows/Translations/badge.svg) to the [README](../README.md)
+
+##### Pulling
+There is no need to pull if you configure `--transifex-token` into your
+[release](../.github/workflows/release.yml) workflow (remember to use Github Secrets).
+You can however pull manually to test the process.
+* Run `qgis-plugin-ci pull-translation --compile <your-transifex-token>`
+
+#### Translating with QT Linguistic (if Transifex not available)
 
 The translation files are in [i18n](../<plugin_name>/resources/i18n) folder.
 Translatable content in python files is code such as `tr(u"Hello World")`.
@@ -61,6 +81,7 @@ Compile the translations to *.qm* files with:
 ```shell script
 python build.py transcompile
 ```
+
 
 ### Creating a release
 Follow these steps to create a release

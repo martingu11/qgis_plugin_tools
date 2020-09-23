@@ -2,6 +2,8 @@
 
 import configparser
 from os.path import abspath, join, pardir, dirname
+from pathlib import Path
+from typing import Optional, Dict
 
 from qgis.PyQt import uic
 
@@ -11,15 +13,16 @@ __email__ = "info@3liz.org"
 __revision__ = "$Format:%H$"
 
 PLUGIN_NAME: str = ""
+SLUG_NAME: str = ""
 
 
-def plugin_path(*args):
+def plugin_path(*args) -> str:
     """Get the path to plugin root folder.
 
     :param args List of path elements e.g. ['img', 'logos', 'image.png']
     :type args: str
 
-    :return: Absolute path to the resoure.
+    :return: Absolute path to the resource.
     :rtype: str
     """
     path = dirname(dirname(__file__))
@@ -30,7 +33,24 @@ def plugin_path(*args):
     return path
 
 
-def plugin_name():
+def root_path(*args) -> str:
+    """Get the path to plugin root folder.
+
+    :param args List of path elements e.g. ['img', 'logos', 'image.png']
+    :type args: str
+
+    :return: Absolute path to the resource.
+    :rtype: str
+    """
+    path = dirname(dirname(__file__))
+    path = abspath(abspath(join(path, pardir, pardir)))
+    for item in args:
+        path = abspath(join(path, item))
+
+    return path
+
+
+def plugin_name() -> str:
     """Return the plugin name according to metadata.txt.
 
     :return: The plugin name.
@@ -45,6 +65,20 @@ def plugin_name():
     return PLUGIN_NAME
 
 
+def slug_name() -> str:
+    """Return project slug name in .qgis-plugin.ci"""
+    global SLUG_NAME
+    if SLUG_NAME == "":
+        config = qgis_plugin_ci_config()
+        if config is not None:
+            name: str = config["project_slug"]
+            name = name.replace(" ", "").strip()
+            SLUG_NAME = name
+        else:
+            SLUG_NAME = PLUGIN_NAME
+    return SLUG_NAME
+
+
 def task_logger_name() -> str:
     """
     Returns the name for task logger
@@ -52,7 +86,7 @@ def task_logger_name() -> str:
     return f"{plugin_name()}_task"
 
 
-def metadata_config() -> configparser:
+def metadata_config() -> configparser.ConfigParser:
     """Get the INI config parser for the metadata file.
 
     :return: The config parser object.
@@ -64,7 +98,26 @@ def metadata_config() -> configparser:
     return config
 
 
-def plugin_test_data_path(*args):
+def qgis_plugin_ci_config() -> Optional[Dict]:
+    """
+    Get configuration of the ci config or None
+    """
+    path = root_path('.qgis-plugin-ci')
+    if not Path(path).exists():
+        path = plugin_path('.qgis-plugin-ci')
+    path = Path(path)
+    if path.exists():
+        with open(path) as f:
+            config = {}
+            for line in f:
+                parts = line.split(':')
+                config[parts[0]] = ':'.join(parts[1:])
+
+        return config
+    return None
+
+
+def plugin_test_data_path(*args) -> str:
     """Get the path to the plugin test data path.
 
     :param args List of path elements e.g. ['img', 'logos', 'image.png']
@@ -80,7 +133,7 @@ def plugin_test_data_path(*args):
     return path
 
 
-def resources_path(*args):
+def resources_path(*args) -> str:
     """Get the path to our resources folder.
 
     :param args List of path elements e.g. ['img', 'logos', 'image.png']

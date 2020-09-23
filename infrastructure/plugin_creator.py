@@ -15,7 +15,9 @@ ROOT_FILES = [
     'requirements.txt',
     'README.md',
     'LICENSE',
+    '.gitignore',
     'docs/development.md',
+    'docs/push_translations.yml',
     'CHANGELOG.md',
     '.github/workflows/tests.yml',
     '.github/workflows/release.yml'

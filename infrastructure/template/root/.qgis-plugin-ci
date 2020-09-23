@@ -1,3 +1,5 @@
 plugin_path: <plugin_name>
 github_organization_slug: <organization>
 project_slug: <repo>
+transifex_coordinator: replace-me
+transifex_organization: replace-me

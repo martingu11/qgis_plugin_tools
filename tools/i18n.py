@@ -7,7 +7,7 @@ from qgis.PyQt.QtCore import QLocale, QFileInfo
 from qgis.PyQt.QtWidgets import QApplication
 from qgis.core import QgsSettings
 
-from .resources import resources_path
+from .resources import resources_path, plugin_name, plugin_path, slug_name
 
 __copyright__ = "Copyright 2019, 3Liz"
 __license__ = "GPL version 3"
@@ -29,19 +29,19 @@ def setup_translation(file_pattern: str = "{}.qm", folder: Optional[str] = None)
     """
     locale = QgsSettings().value("locale/userLocale", QLocale().name())
 
-    if folder:
-        ts_file = QFileInfo(join(folder, file_pattern.format(locale)))
-    else:
-        ts_file = QFileInfo(resources_path("i18n", file_pattern.format(locale)))
-    if ts_file.exists():
-        return locale, ts_file.absoluteFilePath()
+    for prefix in ['', f'{plugin_name()}_', f'{slug_name()}_']:
+        for fldr in [folder, plugin_path('i18n'), resources_path("i18n")]:
+            prefixed_locale = prefix + locale
+            if fldr:
+                ts_file = QFileInfo(join(fldr, file_pattern.format(prefixed_locale)))
+                if ts_file.exists():
+                    return locale, ts_file.absoluteFilePath()
 
-    if folder:
-        ts_file = QFileInfo(join(folder, file_pattern.format(locale[0:2])))
-    else:
-        ts_file = QFileInfo(resources_path("i18n", file_pattern.format(locale[0:2])))
-    if ts_file.exists():
-        return locale, ts_file.absoluteFilePath()
+            prefixed_locale = prefix + locale[0:2]
+            if fldr:
+                ts_file = QFileInfo(join(fldr, file_pattern.format(prefixed_locale)))
+                if ts_file.exists():
+                    return locale, ts_file.absoluteFilePath()
 
     return locale, None
 
