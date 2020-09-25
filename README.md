@@ -1,4 +1,6 @@
 # QGIS Plugin tools
+![](https://github.com/GispoCoding/qgis_plugin_tools/workflows/Tests/badge.svg)
+
 
 **Warning: The API is not stable yet. Function and files may move between commits.**
 
