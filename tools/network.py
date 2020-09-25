@@ -8,6 +8,11 @@ from ..tools.exceptions import QgsPluginNetworkException
 from ..tools.i18n import tr
 from ..tools.resources import plugin_name
 
+__copyright__ = "Copyright 2020, Gispo Ltd"
+__license__ = "GPL version 3"
+__email__ = "info@gispo.fi"
+__revision__ = "$Format:%H$"
+
 LOGGER = logging.getLogger(plugin_name())
 ENCODING = "utf-8"
 
