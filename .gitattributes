@@ -7,3 +7,4 @@ infrastructure/creator.py export-ignore
 infrastructure/plugin_creator.py export-ignore
 infrastructure/template export-ignore
 testing export-ignore
+docs export-ignore

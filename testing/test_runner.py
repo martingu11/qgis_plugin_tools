@@ -5,7 +5,9 @@ __license__ = "GPL version 3"
 __email__ = "info@3liz.org"
 __revision__ = "$Format:%H$"
 
-from .utilities import pytest_report_header
+import pytest
+
+from .utilities import pytest_report_header, is_running_in_tools_module_ci
 
 
 def _run_tests(test_suite, package_name):
@@ -27,12 +29,13 @@ def _run_tests(test_suite, package_name):
     print("Skip                 : {}".format(len(results.skipped)))
     successes = (
         results.testsRun - (
-            len(results.errors) + len(results.failures) + len(results.expectedFailures)
-            + len(results.unexpectedSuccesses) + len(results.skipped)))
+        len(results.errors) + len(results.failures) + len(results.expectedFailures)
+        + len(results.unexpectedSuccesses) + len(results.skipped)))
     print("Successes            : {}".format(successes))
     print("TOTAL                : {}".format(results.testsRun))
 
 
+@pytest.mark.skipif(is_running_in_tools_module_ci(), reason='In CI')
 def test_package(package=".."):
     """Test package.
     This function is called by travis without arguments.

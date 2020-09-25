@@ -12,7 +12,7 @@ Qt with Qt Editor and Qt Linquist installed by following this
 
 For building the plugin use platform independent [build.py](../<plugin_name>/build.py) script.
 
-### Adding or editing  source files
+## Adding or editing  source files
 If you create or edit source files make sure that:
 * they contain relative imports
     ```python
@@ -24,7 +24,7 @@ If you create or edit source files make sure that:
 * they will be found by [build.py](../<plugin_name>/build.py) script (`py_files` and `ui_files` values)
 * you consider adding test files for the new functionality
 
-### Deployment
+## Deployment
 
 Edit [build.py](../<plugin_name>/build.py) to contain working values for *profile*, *lrelease* and *pyrcc*.
 If you are running on Windows, make sure the value *QGIS_INSTALLATION_DIR* points to right folder
@@ -37,13 +37,14 @@ python build.py deploy
 After deploying and restarting QGIS you should see the plugin in the QGIS installed plugins
 where you have to activate it.
 
-#### Testing
+## Testing
 Install Docker, docker-compose and python packages listed in [requirements.txt](../requirements.txt)
 to run tests with:
 
 ```shell script
 python build.py test
 ```
+## Translating
 
 #### Translating with transifex
 
@@ -83,7 +84,7 @@ python build.py transcompile
 ```
 
 
-### Creating a release
+## Creating a release
 Follow these steps to create a release
 * Add changelog information to [CHANGELOG.md](../CHANGELOG.md) using this
 [format](https://raw.githubusercontent.com/opengisch/qgis-plugin-ci/master/CHANGELOG.md)

@@ -29,6 +29,8 @@ from PyQt5.QtCore import QObject, pyqtSlot, pyqtSignal
 from qgis.core import QgsProject, QgsVectorLayer, QgsRelationManager
 from qgis.gui import QgsMapCanvas
 
+from .mock_qgis_classes import MockMessageBar
+
 LOGGER = logging.getLogger('QGIS')
 
 
@@ -47,7 +49,7 @@ class QgisInterface(QObject):
         """
         QObject.__init__(self)
         self.canvas = canvas
-        self._messageBar = messageBar
+        self._messageBar: MockMessageBar = messageBar
         self._mainWindow = mainWindow
 
         # Set up slots so we can mimic the behaviour of QGIS when layers
@@ -204,7 +206,7 @@ class QgisInterface(QObject):
         """Get the legend."""
         return self.canvas
 
-    def messageBar(self):
+    def messageBar(self) -> MockMessageBar:
         """Get the messagebar"""
         return self._messageBar
 

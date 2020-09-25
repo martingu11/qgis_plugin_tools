@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Pull qgis image
+        run: docker pull qgis/qgis:final-3_14_15_focal
+
+      # Runs all tests
+      - name: Run tests
+        run: docker run --rm --net=host --volume `pwd`:/app -w=/app -e QGIS_PLUGIN_IN_CI=1 -e QGIS_PLUGIN_TOOLS_IN_CI=1 qgis/qgis:final-3_14_15_focal sh -c "pip3 install -q pytest && xvfb-run -s '+extension GLX -screen 0 1024x768x24' pytest -v"

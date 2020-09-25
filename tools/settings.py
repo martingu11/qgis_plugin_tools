@@ -23,11 +23,15 @@ def get_setting(key: str, default: Optional[any] = None,
 
     :param key: Key for the setting
     :param default: Optional default value
-    :param typehint:
+    :param typehint: Type hint
     :param internal: Whether to search from only plugin settings or all
     """
     s = QgsSettings()
-    return s.value(setting_key(key) if internal else key, defaultValue=default, type=typehint)
+    kwargs = {'defaultValue': default}
+
+    if typehint is not None:
+        kwargs['type'] = typehint
+    return s.value(setting_key(key) if internal else key, **kwargs)
 
 
 def set_setting(key: str, value: Union[str, int, float, bool], internal: bool = True) -> bool:

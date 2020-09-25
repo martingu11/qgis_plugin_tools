@@ -6,6 +6,9 @@ __date__ = '17/10/2010'
 __license__ = "GPL"
 __copyright__ = 'Copyright 2012, Australia Indonesia Facility for '
 
+import pytest
+
+from .utilities import is_running_in_tools_module_ci
 from ..tools.resources import plugin_path
 
 __copyright__ += 'Disaster Reduction'
@@ -13,6 +16,7 @@ __copyright__ += 'Disaster Reduction'
 import configparser
 
 
+@pytest.mark.skipif(is_running_in_tools_module_ci(), reason='In CI')
 def test_read_init():
     """Test that the plugin __init__ will validate on plugins.qgis.org."""
 
