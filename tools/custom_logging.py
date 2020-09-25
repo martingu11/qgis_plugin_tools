@@ -6,8 +6,8 @@ from logging.handlers import RotatingFileHandler
 from typing import Optional, Any, Dict
 
 from PyQt5.QtCore import QSettings
-from qgis._gui import QgisInterface
 from qgis.core import QgsMessageLog, Qgis
+from qgis.gui import QgisInterface
 
 from .i18n import tr
 from .resources import plugin_name, plugin_path
@@ -235,12 +235,13 @@ def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> log
     logger = logging.getLogger(logger_name)
     logger.setLevel(min(stream_level, file_level))
 
-    file_formatter = logging.Formatter("%(asctime)s - [%(levelname)-7s] - %(filename)s:%(lineno)d : %(message)s",
-                                       "%d.%m.%Y %H:%M:%S")
-    file_handler = RotatingFileHandler(plugin_path("logs", f"{logger_name}.log"), maxBytes=1024 * 1024 * 2)
-    file_handler.setFormatter(file_formatter)
-    file_handler.setLevel(file_level)
-    add_logging_handler_once(logger, file_handler)
+    if logger_name != 'test_plugin':
+        file_formatter = logging.Formatter("%(asctime)s - [%(levelname)-7s] - %(filename)s:%(lineno)d : %(message)s",
+                                           "%d.%m.%Y %H:%M:%S")
+        file_handler = RotatingFileHandler(plugin_path("logs", f"{logger_name}.log"), maxBytes=1024 * 1024 * 2)
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(file_level)
+        add_logging_handler_once(logger, file_handler)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(stream_level)

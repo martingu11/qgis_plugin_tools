@@ -58,10 +58,13 @@ def plugin_name() -> str:
     """
     global PLUGIN_NAME
     if PLUGIN_NAME == "":
-        metadata = metadata_config()
-        name: str = metadata["general"]["name"]
-        name = name.replace(" ", "").strip()
-        PLUGIN_NAME = name
+        try:
+            metadata = metadata_config()
+            name: str = metadata["general"]["name"]
+            name = name.replace(" ", "").strip()
+            PLUGIN_NAME = name
+        except KeyError:
+            PLUGIN_NAME = 'test_plugin'
     return PLUGIN_NAME
 
 
