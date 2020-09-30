@@ -15,6 +15,20 @@ __license__ = "GPL version 3"
 __email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
+
+def is_windows():
+    return "win" in sys.platform
+
+
+WINDOWS_ENV_BATS = [
+    'o4w_env.bat',
+    'qt5_env.bat',
+    'py3_env.bat'
+]
+
+if is_windows():
+    pre_args = [item for sublist in [f"call {bat} &&".split() for bat in WINDOWS_ENV_BATS] for item in sublist]
+
 from ..tools.resources import plugin_name, resources_path, plugin_path
 
 PLUGINNAME = plugin_name()
@@ -52,8 +66,6 @@ COMPILED_RESOURCE_FILES = ["resources.py"]
 '''
 
 
-def is_windows():
-    return "win" in sys.platform
 
 
 # self.qgis_dir points to the location where your plugin should be installed.
@@ -71,12 +83,6 @@ elif is_windows():
     dr = os.path.join("AppData", "Roaming")
 else:
     dr = os.path.join("Library", "Application Support")
-
-WINDOWS_ENV_BATS = [
-    'o4w_env.bat',
-    'qt5_env.bat',
-    'py3_env.bat'
-]
 
 VERBOSE = False
 
