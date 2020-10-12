@@ -22,7 +22,15 @@ def log_if_fails(fn):
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
         try:
-            return fn(self, *args, **kwargs)
+            if args and args != (False,):
+                if len(kwargs):
+                    fn(self, *args, **kwargs)
+                else:
+                    fn(self, *args)
+            elif len(kwargs):
+                fn(self, **kwargs)
+            else:
+                fn(self)
         except QgsPluginException as e:
             LOGGER.exception(str(e), extra=e.bar_msg)
         except Exception as e:
