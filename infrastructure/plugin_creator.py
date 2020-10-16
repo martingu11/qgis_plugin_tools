@@ -26,6 +26,7 @@ PLUGIN_FILES = [
     'test/test_1.py',
     'test/__init__.py',
     'test/pytest.ini',
+    'test/conftest.py',
     'metadata.txt',
     'build.py',
     'logs/.gitignore',
