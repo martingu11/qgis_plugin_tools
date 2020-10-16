@@ -8,8 +8,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 from zipfile import ZipFile
 
-import pytest
-
 __copyright__ = "Copyright 2020, Gispo Ltd"
 __license__ = "GPL version 3"
 __email__ = "info@gispo.fi"
@@ -18,16 +16,6 @@ __revision__ = "$Format:%H$"
 
 def is_windows():
     return "win" in sys.platform
-
-
-WINDOWS_ENV_BATS = [
-    'o4w_env.bat',
-    'qt5_env.bat',
-    'py3_env.bat'
-]
-
-if is_windows():
-    pre_args = [item for sublist in [f"call {bat} &&".split() for bat in WINDOWS_ENV_BATS] for item in sublist]
 
 from ..tools.resources import plugin_name, resources_path, plugin_path
 
@@ -120,7 +108,6 @@ Commands:
      compile        Compiles resources to resources.py
      deploy         Deploys the plugin to the QGIS plugin directory ({self.plugin_dir})
      package        Builds a package that can be uploaded to Github releases or to the plugin
-     test           Runs tests
      transup        Search for new strings to be translated
      transcompile   Compile translation files to .qm files.
 Put -h after command to see available optional arguments if any
@@ -154,7 +141,7 @@ Put -h after command to see available optional arguments if any
     def _get_platform_args(self):
         pre_args = []
         if is_windows():
-            pre_args = [item for sublist in [f"call {bat} &&".split() for bat in WINDOWS_ENV_BATS] for item in sublist]
+            pre_args = ['cmd', '\c']
         return pre_args
 
     def deploy(self):
@@ -185,29 +172,20 @@ Put -h after command to see available optional arguments if any
             exit(1)
 
         if args.tag:
-            self.run_command(["git", "tag", args.version])
+            self.run_command(self._get_platform_args() + ["git", "tag", args.version])
 
         pkg_command = ["git", "archive", f"--prefix={PLUGINNAME}/", "-o", f"{PLUGINNAME}.zip", args.version]
-        self.run_command(pkg_command)
+        self.run_command(self._get_platform_args() + pkg_command)
 
         for submodule in self.submodules:
             d = plugin_path(submodule)
             pkg_command = ["git", "archive", f"--prefix={PLUGINNAME}/{submodule}/", "-o", f"{submodule}.zip",
                            "master"]
-            self.run_command(pkg_command, d=d)
+            self.run_command(self._get_platform_args() + pkg_command, d=d)
         zips = [f"{PLUGINNAME}.zip"] + [os.path.abspath(os.path.join(plugin_path(submodule), f"{submodule}.zip")) for
                                         submodule in self.submodules]
         self.join_zips(zips)
         echo(f"Created package: {PLUGINNAME}.zip")
-
-    def test(self):
-        self.compile()
-        # TODO: Check this
-        os.environ["PYTHONPATH"] = plugin_path()
-        os.environ["QGIS_DEBUG"] = "0"
-        os.environ["IN_TESTS"] = "1"
-        os.environ["QGIS_LOG_FILE"] = "/dev/null" if not is_windows() else "NUL"
-        pytest.main(["-v", "test"])
 
     def transup(self):
         files_to_translate = self.py_files + self.ui_files
