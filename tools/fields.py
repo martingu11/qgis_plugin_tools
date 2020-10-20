@@ -51,9 +51,13 @@ def widget_for_field(field_type: QVariant) -> QWidget:
         QVariant.LongLong,
         QVariant.ULongLong,
     ]:
-        return QgsSpinBox()
+        spin_box = QgsSpinBox()
+        spin_box.setMaximum(2147483647)
+        return spin_box
     elif field_type == QVariant.Double:
-        return QgsDoubleSpinBox()
+        spin_box = QgsDoubleSpinBox()
+        spin_box.setMaximum(2147483647)
+        return spin_box
     elif field_type == QVariant.String:
         return q_combo_box
     elif field_type == QVariant.Date:
