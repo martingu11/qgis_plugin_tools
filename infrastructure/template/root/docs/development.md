@@ -51,6 +51,7 @@ python build.py test
 Fill in `transifex_coordinator` (Transifex username) and `transifex_organization`
 in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
 
+
 ##### Pushing / creating new translations
 * First install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and
   [qgis-plugin-ci](https://github.com/opengisch/qgis-plugin-ci)
@@ -63,6 +64,7 @@ in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
 ##### Pulling
 There is no need to pull if you configure `--transifex-token` into your
 [release](../.github/workflows/release.yml) workflow (remember to use Github Secrets).
+Remember to uncomment the lrelease section as well.
 You can however pull manually to test the process.
 * Run `qgis-plugin-ci pull-translation --compile <your-transifex-token>`
 
