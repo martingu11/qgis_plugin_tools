@@ -72,12 +72,12 @@ def slug_name() -> str:
     """Return project slug name in .qgis-plugin.ci"""
     global SLUG_NAME
     if SLUG_NAME == "":
-        config = qgis_plugin_ci_config()
-        if config is not None:
-            name: str = config["project_slug"]
-            name = name.replace(" ", "").strip()
-            SLUG_NAME = name
-        else:
+        try:
+            metadata = metadata_config()
+            name: str = metadata["repository"]
+            slug = name.split('/')[-1]
+            SLUG_NAME = slug
+        except KeyError:
             SLUG_NAME = PLUGIN_NAME
     return SLUG_NAME
 
