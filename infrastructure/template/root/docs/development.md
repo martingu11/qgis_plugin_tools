@@ -55,6 +55,7 @@ in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
 ##### Pushing / creating new translations
 * First install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and
   [qgis-plugin-ci](https://github.com/opengisch/qgis-plugin-ci)
+* Make sure command `pylupdate5` works. Otherwise install it with `pip install pyqt5`
 * Run `qgis-plugin-ci push-translation <your-transifex-token>`
 * Go to your Transifex site, add some languages and start translating
 * Copy [push_translations.yml](push_translations.yml) file to [workflows](../.github/workflows) folder
