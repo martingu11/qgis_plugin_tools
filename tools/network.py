@@ -98,8 +98,8 @@ def download_to_file(url: str, output_dir: Path, output_name: Optional[str] = No
                 out_name = default_filename
             else:
                 out_name = url.replace('http://', '').replace('https://', '')
-                if len(output_name.split('/')[-1]) > 2:
-                    out_name = output_name.split('/')[-1]
+                if len(out_name.split('/')[-1]) > 2:
+                    out_name = out_name.split('/')[-1]
         else:
             out_name = output_name
         return Path(output_dir, out_name)
