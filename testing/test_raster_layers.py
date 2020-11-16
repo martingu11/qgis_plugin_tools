@@ -4,9 +4,9 @@ __email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
 import datetime
-from pathlib import Path
 
 import pytest
+from PyQt5.QtCore import QDateTime, Qt
 from qgis.core import QgsSingleBandGrayRenderer, QgsRasterLayer, QgsDateTimeRange
 
 from ..tools.network import download_to_file
@@ -22,7 +22,7 @@ def netcdf_layer(tmpdir) -> QgsRasterLayer:
 
 @pytest.fixture
 def t_range() -> QgsDateTimeRange:
-    return QgsDateTimeRange(datetime.datetime(2020, 11, 2, 15, 0), datetime.datetime(2020, 11, 3, 11, 0))
+    return QgsDateTimeRange(QDateTime(2020, 11, 2, 15, 0, 0, 0), QDateTime(2020, 11, 3, 11, 0, 0, 0))
 
 
 @pytest.fixture
@@ -41,28 +41,30 @@ def test_set_fixed_temporal_range(netcdf_layer, t_range):
     set_fixed_temporal_range(netcdf_layer, t_range)
     tprops = netcdf_layer.temporalProperties()
     assert tprops.isActive()
-    assert tprops.fixedTemporalRange() == t_range
+    assert tprops.fixedTemporalRange() == QgsDateTimeRange(QDateTime(2020, 11, 2, 15, 0, 0, 0, Qt.TimeSpec(1)),
+                                                           QDateTime(2020, 11, 3, 11, 0, 0, 0, Qt.TimeSpec(1)))
 
 
-def test_set_fixed_temporal_range(configured_layer):
+def test_set_band_based_on_range(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 15, 0), datetime.datetime(2020, 11, 2, 16, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 1
 
 
-def test_set_fixed_temporal_range2(configured_layer):
+def test_set_band_based_on_range2(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 17, 0), datetime.datetime(2020, 11, 2, 18, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 3
 
 
-def test_set_fixed_temporal_range3(configured_layer):
+def test_set_band_based_on_range3(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 18, 0), datetime.datetime(2020, 11, 2, 22, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 4
 
 
-def test_set_fixed_temporal_range4(configured_layer):
-    t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 3, 10, 0), datetime.datetime(2020, 11, 3, 11, 0))
+def test_set_band_based_on_range4(configured_layer):
+    t_range2 = QgsDateTimeRange(QDateTime(2020, 11, 3, 10, 0, 0, 0, Qt.TimeSpec(1)),
+                                QDateTime(2020, 11, 3, 11, 0, 0, 0, Qt.TimeSpec(1)))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 20
