@@ -9,6 +9,11 @@ from typing import Set
 
 from qgis.core import QgsWkbTypes, QgsVectorLayer
 
+try:
+    from qgis.core import QgsVectorLayerTemporalProperties, QgsUnitTypes
+except ImportError:
+    QgsVectorLayerTemporalProperties = None
+
 POINT_TYPES = {
     QgsWkbTypes.Point, QgsWkbTypes.PointGeometry, QgsWkbTypes.PointM,
     QgsWkbTypes.Point25D, QgsWkbTypes.PointZ, QgsWkbTypes.PointZM,
@@ -44,3 +49,21 @@ class LayerType(enum.Enum):
     @property
     def wkb_types(self) -> Set[QgsWkbTypes.GeometryType]:
         return self.value['wkb_types']
+
+
+def set_temporal_settings(layer: QgsVectorLayer, dt_field: str, time_step: int,
+                          unit: QgsUnitTypes.TemporalUnit = QgsUnitTypes.TemporalMinutes) -> None:
+    """
+    Set temporal settings for vector layer temporal range for raster layer
+    :param layer: raster layer
+    :param dt_field: name of the date time field
+    :param time_step: time step in some QgsUnitTypes.TemporalUnit
+    :param unit: QgsUnitTypes.TemporalUnit
+    """
+    mode = QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField
+    tprops: QgsVectorLayerTemporalProperties = layer.temporalProperties()
+    tprops.setMode(mode)
+    tprops.setStartField(dt_field)
+    tprops.setFixedDuration(time_step)
+    tprops.setDurationUnits(unit)
+    tprops.setIsActive(True)
