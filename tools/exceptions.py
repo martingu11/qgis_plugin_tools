@@ -33,3 +33,7 @@ class QgsPluginNotImplementedException(QgsPluginException):
 
 class QgsPluginVersionInInvalidFormat(QgsPluginException):
     pass
+
+
+class QgsPluginInvalidProjectSetting(QgsPluginException):
+    pass
