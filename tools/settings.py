@@ -2,7 +2,7 @@ from os.path import join
 from typing import Optional, Union
 
 from PyQt5.QtCore import QVariant
-from qgis.core import QgsSettings, QgsProject
+from qgis.core import QgsSettings, QgsProject, QgsExpressionContextUtils
 
 from .exceptions import QgsPluginInvalidProjectSetting
 from .resources import plugin_name
@@ -48,7 +48,7 @@ def set_setting(key: str, value: Union[str, int, float, bool], internal: bool = 
 
 
 def get_project_setting(key: str, default: Optional[any] = None,
-                        typehint: type = None) -> Union[QVariant, str, None]:
+                        typehint: type = None, internal: bool = True) -> Union[QVariant, str, None]:
     """
     Get QGIS project setting value
 
@@ -59,6 +59,11 @@ def get_project_setting(key: str, default: Optional[any] = None,
     :return: Value if conversion is successful, else None
     """
     proj = QgsProject.instance()
+
+    if not internal:
+        value = QgsExpressionContextUtils.projectScope(proj).variable(key)
+        return value if value is not None else default
+
     args = [plugin_name(), key]
     if default is not None:
         args.append(default)
@@ -80,15 +85,20 @@ def get_project_setting(key: str, default: Optional[any] = None,
     return value if conversion_ok else default
 
 
-def set_project_setting(key: str, value: Union[str, int, float, bool]) -> bool:
+def set_project_setting(key: str, value: Union[str, int, float, bool], internal: bool = True) -> bool:
     """
     Set a value in the QGIS project settings
 
     :param key: Key for the setting
     :param value: Value for the setting
+    :param internal: Whether to search from only plugin settings or all
     """
     proj = QgsProject.instance()
-    return proj.writeEntry(plugin_name(), key, value)
+    if internal:
+        return proj.writeEntry(plugin_name(), key, value)
+    else:
+        QgsExpressionContextUtils.setProjectVariable(proj, key, value)
+        return True
 
 
 def parse_value(value: Union[QVariant, str]) -> Union[None, str, bool]:
