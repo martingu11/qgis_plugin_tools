@@ -12,7 +12,7 @@ from qgis.core import QgsWkbTypes, QgsVectorLayer
 try:
     from qgis.core import QgsVectorLayerTemporalProperties, QgsUnitTypes
 except ImportError:
-    QgsVectorLayerTemporalProperties = None
+    QgsVectorLayerTemporalProperties = QgsUnitTypes = None
 
 POINT_TYPES = {
     QgsWkbTypes.Point, QgsWkbTypes.PointGeometry, QgsWkbTypes.PointM,
@@ -52,7 +52,7 @@ class LayerType(enum.Enum):
 
 
 def set_temporal_settings(layer: QgsVectorLayer, dt_field: str, time_step: int,
-                          unit: QgsUnitTypes.TemporalUnit = QgsUnitTypes.TemporalMinutes) -> None:
+                          unit: 'QgsUnitTypes.TemporalUnit' = None) -> None:
     """
     Set temporal settings for vector layer temporal range for raster layer
     :param layer: raster layer
@@ -60,6 +60,8 @@ def set_temporal_settings(layer: QgsVectorLayer, dt_field: str, time_step: int,
     :param time_step: time step in some QgsUnitTypes.TemporalUnit
     :param unit: QgsUnitTypes.TemporalUnit
     """
+    if unit is None:
+        unit = QgsUnitTypes.TemporalMinutes
     mode = QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField
     tprops: QgsVectorLayerTemporalProperties = layer.temporalProperties()
     tprops.setMode(mode)
