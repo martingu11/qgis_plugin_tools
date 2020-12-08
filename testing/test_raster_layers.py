@@ -9,6 +9,7 @@ import pytest
 from PyQt5.QtCore import QDateTime, Qt
 from qgis.core import QgsSingleBandGrayRenderer, QgsRasterLayer, QgsDateTimeRange
 
+from .utilities import qgis_supports_temporal
 from ..tools.network import download_to_file
 from ..tools.raster_layers import set_raster_renderer_to_singleband, set_band_based_on_range, set_fixed_temporal_range
 
@@ -37,6 +38,7 @@ def test_set_raster_renderer_to_singleband(netcdf_layer):
     assert isinstance(netcdf_layer.renderer(), QgsSingleBandGrayRenderer)
 
 
+@pytest.mark.skipif(not qgis_supports_temporal(), reason='QGIS version does not support temporal utils')
 def test_set_fixed_temporal_range(netcdf_layer, t_range):
     set_fixed_temporal_range(netcdf_layer, t_range)
     tprops = netcdf_layer.temporalProperties()
@@ -45,24 +47,28 @@ def test_set_fixed_temporal_range(netcdf_layer, t_range):
                                                            QDateTime(2020, 11, 3, 11, 0, 0, 0, Qt.TimeSpec(1)))
 
 
+@pytest.mark.skipif(not qgis_supports_temporal(), reason='QGIS version does not support temporal utils')
 def test_set_band_based_on_range(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 15, 0), datetime.datetime(2020, 11, 2, 16, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 1
 
 
+@pytest.mark.skipif(not qgis_supports_temporal(), reason='QGIS version does not support temporal utils')
 def test_set_band_based_on_range2(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 17, 0), datetime.datetime(2020, 11, 2, 18, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 3
 
 
+@pytest.mark.skipif(not qgis_supports_temporal(), reason='QGIS version does not support temporal utils')
 def test_set_band_based_on_range3(configured_layer):
     t_range2 = QgsDateTimeRange(datetime.datetime(2020, 11, 2, 18, 0), datetime.datetime(2020, 11, 2, 22, 0))
     band_number = set_band_based_on_range(configured_layer, t_range2)
     assert band_number == 4
 
 
+@pytest.mark.skipif(not qgis_supports_temporal(), reason='QGIS version does not support temporal utils')
 def test_set_band_based_on_range4(configured_layer):
     t_range2 = QgsDateTimeRange(QDateTime(2020, 11, 3, 10, 0, 0, 0, Qt.TimeSpec(1)),
                                 QDateTime(2020, 11, 3, 11, 0, 0, 0, Qt.TimeSpec(1)))
