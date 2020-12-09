@@ -1,6 +1,7 @@
 # <plugin_name>
 ![](https://github.com/<organization>/<repo>/workflows/Tests/badge.svg)
 ![](https://github.com/<organization>/<repo>/workflows/TestsLTR/badge.svg)
+[![codecov.io](https://codecov.io/github/<organization>/<repo>/coverage.svg?branch=master)](https://codecov.io/github/<organization>/<repo>?branch=master)
 ![](https://github.com/<organization>/<repo>/workflows/Release/badge.svg)
 
 
