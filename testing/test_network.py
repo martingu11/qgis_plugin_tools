@@ -3,8 +3,6 @@ __license__ = "GPL version 3"
 __email__ = "info@gispo.fi"
 __revision__ = "$Format:%H$"
 
-from pathlib import Path
-
 import pytest
 
 from ..tools.exceptions import QgsPluginNetworkException
@@ -21,6 +19,7 @@ def test_fetch_invalid_url(new_project):
         fetch('invalidurl')
 
 
+@pytest.mark.skip("file does not exist. TODO: search another file to be used using Content-Disposition")
 def test_download_to_file(new_project, tmpdir):
     path_to_file = download_to_file('https://twitter.com/gispofinland/status/1324599933337567232/photo/1', tmpdir,
                                     'test_file')
@@ -28,6 +27,7 @@ def test_download_to_file(new_project, tmpdir):
     assert path_to_file.is_file()
 
 
+@pytest.mark.skip("file does not exist. TODO: search another file to be used using Content-Disposition")
 def test_download_to_file_without_requests(new_project, tmpdir):
     path_to_file = download_to_file('https://twitter.com/gispofinland/status/1324599933337567232/photo/1', tmpdir,
                                     'test_file', use_requests_if_available=False)
