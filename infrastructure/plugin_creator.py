@@ -20,7 +20,10 @@ ROOT_FILES = [
     'docs/push_translations.yml',
     'CHANGELOG.md',
     '.github/workflows/tests.yml',
-    '.github/workflows/release.yml'
+    '.github/workflows/tests_ltr.yml',
+    '.github/workflows/release.yml',
+    '.github/ISSUE_TEMPLATE/bug_report.md',
+    '.github/ISSUE_TEMPLATE/feature_request.md'
 ]
 PLUGIN_FILES = [
     'test/test_1.py',
