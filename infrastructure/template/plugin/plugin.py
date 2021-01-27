@@ -17,7 +17,7 @@ class Plugin:
 
         self.iface = iface
 
-        setup_logger(plugin_name(), iface)
+        setup_logger(plugin_name())
 
         # initialize locale
         locale, file_path = setup_translation()
