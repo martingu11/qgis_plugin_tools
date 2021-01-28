@@ -8,6 +8,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 from zipfile import ZipFile
 
+from ..tools.resources import plugin_name, resources_path, plugin_path
+
 __copyright__ = "Copyright 2020, Gispo Ltd"
 __license__ = "GPL version 3"
 __email__ = "info@gispo.fi"
@@ -17,7 +19,6 @@ __revision__ = "$Format:%H$"
 def is_windows():
     return "win" in sys.platform
 
-from ..tools.resources import plugin_name, resources_path, plugin_path
 
 PLUGINNAME = plugin_name()
 
@@ -54,8 +55,6 @@ COMPILED_RESOURCE_FILES = ["resources.py"]
 '''
 
 
-
-
 # self.qgis_dir points to the location where your plugin should be installed.
 # This varies by platform, relative to your HOME directory:
 #	* Linux:
@@ -84,7 +83,7 @@ class PluginMaker:
 
     def __init__(self, py_files, ui_files, resources=RESOURCES_SRC, extra_dirs=EXTRA_DIRS,
                  extras=EXTRAS, compiled_resources=COMPILED_RESOURCE_FILES, locales=LOCALES, profile=PROFILE,
-                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES):
+                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES, clean_extra_dirs=True):
         global VERBOSE
         self.py_files = py_files
         self.ui_files = ui_files
@@ -99,6 +98,7 @@ class PluginMaker:
         self.qgis_dir = os.path.join(dr, "QGIS", "QGIS3", "profiles", profile)
         self.plugin_dir = os.path.join(str(Path.home()), self.qgis_dir, "python", "plugins", PLUGINNAME)
         self.submodules = submodules
+        self.clean_extra_dirs = clean_extra_dirs
         VERBOSE = verbose
 
         # git-like usage https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
@@ -138,7 +138,8 @@ Put -h after command to see available optional arguments if any
             else:
                 raise ValueError(f"The expected resource file {fil} is missing!")
 
-    def _get_platform_args(self):
+    @staticmethod
+    def _get_platform_args():
         pre_args = []
         if is_windows():
             pre_args = ['cmd', '\c']
@@ -148,12 +149,12 @@ Put -h after command to see available optional arguments if any
         self.compile()
         dst_dir = f"{self.plugin_dir}/"
         os.makedirs(self.plugin_dir, exist_ok=True)
-        for dr in self.extra_dirs:
-            echo(f"cp -R --parents {dr} {dst_dir}")
-            dst = os.path.join(self.plugin_dir, dr)
-            if os.path.exists(dst):
+        for dir_ in self.extra_dirs:
+            echo(f"cp -R --parents {dir_} {dst_dir}")
+            dst = os.path.join(self.plugin_dir, dir_)
+            if os.path.exists(dst) and self.clean_extra_dirs:
                 shutil.rmtree(dst)
-            shutil.copytree(dr, dst)
+            shutil.copytree(dir_, dst)
         self.cp_parents(dst_dir, self.extras)
         self.cp_parents(dst_dir, self.compiled_resources)
         self.cp_parents(dst_dir, self.py_files)
