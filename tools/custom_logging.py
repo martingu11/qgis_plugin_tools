@@ -261,6 +261,12 @@ def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> log
     qgis_handler.setFormatter(qgis_formatter)
     add_logging_handler_once(logger, qgis_handler)
 
+    if iface is None:
+        try:
+            from qgis.utils import iface
+        except ImportError:
+            iface = None
+
     if iface is not None:
         qgis_msg_bar_handler = QgsMessageBarHandler(iface)
         qgis_msg_bar_handler.addFilter(QgsMessageBarFilter())
