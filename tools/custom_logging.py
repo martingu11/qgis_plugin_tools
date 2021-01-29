@@ -171,12 +171,6 @@ class QgsMessageBarHandler(logging.Handler):
                                                     text=record.details,
                                                     level=record.qgis_level,
                                                     duration=record.duration)
-            else:
-                from qgis.utils import iface
-                iface.messageBar().pushMessage(title=record.message,
-                                               text=record.details,
-                                               level=record.qgis_level,
-                                               duration=record.duration)
         except MemoryError:
             pass  # This is handled in QgsLogHandler
 
