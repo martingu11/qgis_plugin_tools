@@ -64,7 +64,7 @@ QGIS settings and change the language to the locale that you have created transl
 
 Restart QGIS, open QGIS Python console and open the plugin. The print statements should now be translated.
 
-## Automatic
+### Automatic
 
 Move push_translations.yml from the docs folder to the .github/workflows directory.
 
