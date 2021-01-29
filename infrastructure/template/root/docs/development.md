@@ -51,6 +51,12 @@ python build.py test
 Fill in `transifex_coordinator` (Transifex username) and `transifex_organization`
 in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
 
+If you want to see the translations during development, add `i18n` to the `extra_dirs` in `build.py`:
+
+```python
+extra_dirs = ["resources", "i18n"]
+```
+
 
 ##### Pushing / creating new translations
 * First install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and

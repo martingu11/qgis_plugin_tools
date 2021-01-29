@@ -62,7 +62,6 @@ Plugin `Foo` root folder:
     * `.gitignore`
     * `.qgis-plugin-ci` # to use [qgis-plugin-ci](https://github.com/opengisch/qgis-plugin-ci)
         * `plugin_name` # **no '-' character!**
-          * **`logs/`**
             * `.gitignore`
           * `qgis_plugins_tools/` # submodule
           * **`resources/`**

@@ -83,7 +83,7 @@ plugin directories. For example to fetch ui file from resources/ui folder use
 ## Translating
 
 ### Using translations in code
-It is a good practice to use wrap every meaningfuly log or message string inside `tr`
+It is a good practice to use wrap every meaningful log or message string inside `tr`
 to make it possibly translatable.
 
 
@@ -145,7 +145,7 @@ profile = 'foo'
 py_files = [fil for fil in glob.glob("**/*.py", recursive=True) if "test/" not in fil]
 ui_files = list(glob.glob("**/*.ui", recursive=True))
 resources = list(glob.glob("**/*.qrc", recursive=True))
-extra_dirs = ["resources", "logs"]
+extra_dirs = ["resources"]
 compiled_resources = ["resources.py"]
 
 
