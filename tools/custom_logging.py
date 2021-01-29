@@ -171,12 +171,6 @@ class QgsMessageBarHandler(logging.Handler):
                                                     text=record.details,
                                                     level=record.qgis_level,
                                                     duration=record.duration)
-            else:
-                from qgis.utils import iface
-                iface.messageBar().pushMessage(title=record.message,
-                                               text=record.details,
-                                               level=record.qgis_level,
-                                               duration=record.duration)
         except MemoryError:
             pass  # This is handled in QgsLogHandler
 
@@ -260,6 +254,12 @@ def setup_logger(logger_name: str, iface: Optional[QgisInterface] = None) -> log
     qgis_formatter = logging.Formatter("[%(levelname)-7s]- %(message)s")
     qgis_handler.setFormatter(qgis_formatter)
     add_logging_handler_once(logger, qgis_handler)
+
+    if iface is None:
+        try:
+            from qgis.utils import iface
+        except ImportError:
+            iface = None
 
     if iface is not None:
         qgis_msg_bar_handler = QgsMessageBarHandler(iface)
