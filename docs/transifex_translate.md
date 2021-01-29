@@ -33,7 +33,7 @@ to your Transifex username, and transifex_organization to your Transifex organiz
 **Note**: If you have issues with pushing to Transifex, verify the organization name by logging in to transifex.com,
 open your organization and check the URL. I created an organization called test but the actual name is test-1245!
 
-Next, verify the repository value in metadata.txt points to your GitHub repository. Also check the homepage and tracker
+Finally, verify the repository value in metadata.txt points to your GitHub repository. Also check the homepage and tracker
 values here.
 
 ## Pushing and pulling
@@ -48,7 +48,7 @@ After doing some translations, pull the translations by running the command
 
 You should now have some .qm and .ts files in your PluginName/i18n directory.
 
-## Deploying
+## Deploying and testing
 
 ### Manual
 
@@ -69,9 +69,12 @@ Restart QGIS, open QGIS Python console and open the plugin. The print statements
 Move push_translations.yml from the docs folder to the .github/workflows directory.
 
 Edit release.yml from .github/workflows and add `--transifex-token ${{ secrets.TRANSIFEX_TOKEN }}` to the last line of
-code. 
+code. Also uncomment the two lines below "Needed if the plugin is using Transifex".
 
 Translations are now pushed to Transifex whenever you push code to the master branch. Translations are automatically
 pulled and compiled from Transifex when creating a release. For instructions on creating a release, read
 [here](https://github.com/GispoCoding/qgis_plugin_tools/blob/master/infrastructure/template/root/docs/development.md#creating-a-release).
+After creating a release on GitHub (open tags, then the releases tab and create a new release) the release workflow
+will run and automatically add a .zip file to the release. Download the zip, install it from the QGIS plugins menu
+(under the install from zip-tab) and test that the translations are working.
 
