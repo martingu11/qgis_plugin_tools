@@ -32,7 +32,6 @@ PLUGIN_FILES = [
     'test/conftest.py',
     'metadata.txt',
     'build.py',
-    'logs/.gitignore',
     '__init__.py',
     'plugin.py',
     '.editorconfig',

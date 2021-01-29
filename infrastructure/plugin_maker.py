@@ -43,7 +43,7 @@ RESOURCES_SRC = []
 
 EXTRAS = ["metadata.txt"]
 
-EXTRA_DIRS = ["resources", "logs"]
+EXTRA_DIRS = ["resources"]
 
 COMPILED_RESOURCE_FILES = ["resources.py"]
 
