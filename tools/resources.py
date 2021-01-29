@@ -74,7 +74,7 @@ def slug_name() -> str:
     if SLUG_NAME == "":
         try:
             metadata = metadata_config()
-            name: str = metadata["repository"]
+            name: str = metadata["general"]["repository"]
             slug = name.split('/')[-1]
             SLUG_NAME = slug
         except KeyError:
