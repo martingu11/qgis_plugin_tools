@@ -43,7 +43,7 @@ class LayerType(enum.Enum):
     @staticmethod
     def from_layer(layer: QgsVectorLayer) -> 'LayerType':
         for l_type in LayerType:
-            if layer.geometryType() in l_type.wkb_types:
+            if layer.wkbType() in l_type.wkb_types:
                 return l_type
 
     @property
