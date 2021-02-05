@@ -290,3 +290,13 @@ def setup_task_logger(logger_name: str) -> logging.Logger:
     add_logging_handler_once(logger, qgis_handler)
 
     return logger
+
+
+def teardown_logger(logger_name: str) -> None:
+    """ Remove all handlers from the logger
+
+    :param logger_name: The logger name that we want to tear down.
+    """
+    logger = logging.getLogger(logger_name)
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
