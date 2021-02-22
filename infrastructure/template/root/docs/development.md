@@ -46,7 +46,7 @@ python build.py test
 ```
 ## Translating
 
-#### Translating with transifex
+### Translating with Transifex
 
 Fill in `transifex_coordinator` (Transifex username) and `transifex_organization`
 in [.qgis-plugin-ci](../.qgis-plugin-ci) to use Transifex translation.
@@ -58,8 +58,9 @@ extra_dirs = ["resources", "i18n"]
 ```
 
 
-##### Pushing / creating new translations
-* First install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and
+#### Pushing / creating new translations
+For step-by-step instructions, read the [translation tutorial](./translation_tutorial.md#Tutorial).
+* First, install [Transifex CLI](https://docs.transifex.com/client/installing-the-client) and
   [qgis-plugin-ci](https://github.com/opengisch/qgis-plugin-ci)
 * Make sure command `pylupdate5` works. Otherwise install it with `pip install pyqt5`
 * Run `qgis-plugin-ci push-translation <your-transifex-token>`
