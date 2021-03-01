@@ -84,7 +84,8 @@ class PluginMaker:
 
     def __init__(self, py_files, ui_files, resources=RESOURCES_SRC, extra_dirs=EXTRA_DIRS,
                  extras=EXTRAS, compiled_resources=COMPILED_RESOURCE_FILES, locales=LOCALES, profile=PROFILE,
-                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES):
+                 lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES,
+                 plugin_dir=PLUGINNAME.lower()):
         global VERBOSE
         self.py_files = py_files
         self.ui_files = ui_files
@@ -97,7 +98,7 @@ class PluginMaker:
         self.lrelease = lrelease
         self.pyrcc = pyrcc
         self.qgis_dir = os.path.join(dr, "QGIS", "QGIS3", "profiles", profile)
-        self.plugin_dir = os.path.join(str(Path.home()), self.qgis_dir, "python", "plugins", PLUGINNAME)
+        self.plugin_dir = os.path.join(str(Path.home()), self.qgis_dir, "python", "plugins", plugin_dir)
         self.submodules = submodules
         VERBOSE = verbose
 
