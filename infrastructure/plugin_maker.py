@@ -85,6 +85,7 @@ class PluginMaker:
     def __init__(self, py_files, ui_files, resources=RESOURCES_SRC, extra_dirs=EXTRA_DIRS,
                  extras=EXTRAS, compiled_resources=COMPILED_RESOURCE_FILES, locales=LOCALES, profile=PROFILE,
                  lrelease=LRELEASE, pyrcc=PYRCC, verbose=VERBOSE, submodules=SUBMODULES,
+                 resource_file='./resources_rc.py',
                  plugin_dir=PLUGINNAME.lower()):
         global VERBOSE
         self.py_files = py_files
@@ -99,6 +100,7 @@ class PluginMaker:
         self.pyrcc = pyrcc
         self.qgis_dir = os.path.join(dr, "QGIS", "QGIS3", "profiles", profile)
         self.plugin_dir = os.path.join(str(Path.home()), self.qgis_dir, "python", "plugins", plugin_dir)
+        self.resource_file = resource_file
         self.submodules = submodules
         VERBOSE = verbose
 
@@ -131,13 +133,14 @@ Put -h after command to see available optional arguments if any
 
     def compile(self):
         pre_args = self._get_platform_args()
-        for fil in self.resources:
-            if os.path.exists(fil):
 
-                args = pre_args + [self.pyrcc, "-o", fil.replace(".qrc", ".py"), fil]
-                self.run_command(args)
-            else:
-                raise ValueError(f"The expected resource file {fil} is missing!")
+        if len(self.resources) > 0:
+            self.compile_resources(self.resources, self.resource_file)
+
+    def compile_resources(self, files_in, file_out):
+        from PyQt5 import pyrcc_main as rcc
+        rcc.processResourceFile(files_in, file_out, False)
+
 
     def _get_platform_args(self):
         pre_args = []
@@ -212,6 +215,8 @@ Put -h after command to see available optional arguments if any
         if d is not None:
             cmd = f"cd {d} && " + cmd
         echo(cmd, force=force_show_output)
+
+        print (args)
         pros = subprocess.Popen(args, cwd=d, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = pros.communicate()
         echo(stdout, force=force_show_output)
